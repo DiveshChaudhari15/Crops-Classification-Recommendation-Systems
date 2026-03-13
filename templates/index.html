@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Crops Recommendation System — Home{% endblock %}
+{% block extra_css %}
+<style>
+  .hero{min-height:88vh;display:flex;align-items:center;background:linear-gradient(135deg,rgba(27,94,32,.85),rgba(1,87,155,.8)),url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1400') center/cover;color:#fff;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,255,255,.05) 0%,transparent 70%);}
+  .hero-title{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;line-height:1.15;text-shadow:0 2px 16px rgba(0,0,0,.3);}
+  .hero-sub{font-size:1.2rem;opacity:.9;max-width:580px;text-shadow:0 1px 8px rgba(0,0,0,.2);}
+  .feature-card{border-radius:20px;padding:2rem;text-align:center;transition:.3s;cursor:default;}
+  .feature-card:hover{transform:translateY(-8px);}
+  .feature-icon{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1rem;}
+  .district-chip{display:inline-block;margin:.3rem;padding:.35rem .9rem;border-radius:50px;font-size:.8rem;font-weight:600;background:linear-gradient(135deg,#e8f5e9,#e3f2fd);color:#2e7d32;border:1px solid rgba(46,125,50,.25);transition:.2s;}
+  .district-chip:hover{transform:scale(1.05);}
+  .stat-card{border-radius:20px;padding:1.5rem;text-align:center;}
+  .stat-num{font-size:2.5rem;font-weight:900;background:linear-gradient(135deg,#2e7d32,#0288d1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .wave{position:absolute;bottom:0;left:0;width:100%;overflow:hidden;line-height:0;}
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container position-relative">
+    <div class="row align-items-center">
+      <div class="col-lg-7 fade-up">
+        <div class="mb-3"><span class="badge bg-light text-success px-3 py-2 rounded-pill fw-600"><i class="fas fa-robot me-2"></i>AI-Powered Agricultural Intelligence</span></div>
+        <h1 class="hero-title">Smart Crop Recommendation for <span style="color:#a5d6a7">Maharashtra</span> Farmers</h1>
+        <p class="hero-sub mt-3 mb-4">Enter your district, soil nutrients, and environmental conditions to get the best crop recommendation powered by Machine Learning — covering 20 districts and 22 crops.</p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="/predict" class="btn btn-light btn-lg rounded-pill fw-700 px-4" style="color:#2e7d32"><i class="fas fa-leaf me-2"></i>Predict Best Crop</a>
+          <a href="/dashboard" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="fas fa-chart-bar me-2"></i>View Dashboard</a>
+        </div>
+      </div>
+      <div class="col-lg-5 mt-5 mt-lg-0 d-none d-lg-block fade-up fade-up-d2">
+        <div class="glass-card p-4 text-center">
+          <div style="font-size:5rem">🌾</div>
+          <h4 class="text-white mt-2 fw-700">AI Crop Advisor</h4>
+          <p class="text-white opacity-75 small mb-3">Powered by 5 ML algorithms trained on Maharashtra agricultural data</p>
+          <div class="row g-2 text-white">
+            <div class="col-6"><div class="glass-card p-2"><div class="fw-700">20</div><div class="small opacity-75">Districts</div></div></div>
+            <div class="col-6"><div class="glass-card p-2"><div class="fw-700">22</div><div class="small opacity-75">Crop Types</div></div></div>
+            <div class="col-6"><div class="glass-card p-2"><div class="fw-700">2200+</div><div class="small opacity-75">Data Records</div></div></div>
+            <div class="col-6"><div class="glass-card p-2"><div class="fw-700">5</div><div class="small opacity-75">ML Models</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4 fade-up">
+      {% for icon, label, val, color in [('fa-map-marker-alt','Districts Covered','20','#2e7d32'),('fa-seedling','Crop Types','22','#0288d1'),('fa-database','Training Records','2,200+','#6d4c41'),('fa-robot','ML Algorithms','5','#8e24aa')] %}
+      <div class="col-6 col-md-3">
+        <div class="glass-card stat-card">
+          <i class="fas {{ icon }} fa-2x mb-2" style="color:{{ color }}"></i>
+          <div class="stat-num">{{ val }}</div>
+          <div class="text-muted fw-500">{{ label }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center section-title fade-up">Why CropAI Maharashtra?</h2>
+    <div class="row g-4 mt-2">
+      {% for icon, bg, title, desc in [
+        ('fa-brain','linear-gradient(135deg,#e8f5e9,#c8e6c9)','ML-Powered Prediction','5 machine learning models trained and evaluated — Random Forest, SVM, Gradient Boosting and more.'),
+        ('fa-map','linear-gradient(135deg,#e3f2fd,#bbdefb)','District-Aware','Recommendations tailored to all 20 major Maharashtra districts with local crop affinity rules.'),
+        ('fa-flask','linear-gradient(135deg,#fce4ec,#f8bbd0)','Soil Analysis','Input nitrogen, phosphorus, potassium and pH levels for precise soil-based recommendations.'),
+        ('fa-cloud-rain','linear-gradient(135deg,#e0f2f1,#b2dfdb)','Weather-Aware','Temperature, humidity, and rainfall data incorporated for environment-matched suggestions.'),
+        ('fa-chart-pie','linear-gradient(135deg,#fff3e0,#ffe0b2)','Rich Analytics','Visual dashboards with crop distribution, district analysis, and feature importance charts.'),
+        ('fa-list-ol','linear-gradient(135deg,#f3e5f5,#e1bee7)','Top 5 Crops','Not just one — get Top 5 suitable crops ranked by confidence with detailed farming tips.')
+      ] %}
+      <div class="col-md-4 fade-up">
+        <div class="glass-card feature-card h-100">
+          <div class="feature-icon" style="background:{{ bg }}"><i class="fas {{ icon }}" style="color:#2e7d32"></i></div>
+          <h5 class="fw-700">{{ title }}</h5>
+          <p class="text-muted mb-0">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- DISTRICTS -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center section-title fade-up">Districts Covered</h2>
+    <div class="glass-card p-4 mt-3 text-center fade-up">
+      {% for d in districts %}
+        <span class="district-chip"><i class="fas fa-map-pin me-1"></i>{{ d }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5">
+  <div class="container text-center fade-up">
+    <div class="glass-card p-5">
+      <div style="font-size:4rem" class="mb-3">🚀</div>
+      <h2 class="section-title">Ready to Find the Best Crop?</h2>
+      <p class="text-muted mb-4">Enter your field conditions and let AI recommend the most suitable crop for maximum yield.</p>
+      <a href="/predict" class="btn btn-green btn-lg"><i class="fas fa-leaf me-2"></i>Start Crop Prediction</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

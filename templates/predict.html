@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Crop Prediction — Crops Recommendation System{% endblock %}
+{% block extra_css %}
+<style>
+  .predict-hero{background:linear-gradient(135deg,#1b5e20,#01579b);padding:3rem 0 2rem;color:#fff;}
+  .form-label{font-weight:600;color:#2e7d32;font-size:.9rem;}
+  .form-control,.form-select{border-radius:12px;border:2px solid #e0f2e9;padding:.7rem 1rem;transition:.3s;}
+  .form-control:focus,.form-select:focus{border-color:#4caf50;box-shadow:0 0 0 .2rem rgba(76,175,80,.2);}
+  .input-group-text{background:linear-gradient(135deg,#e8f5e9,#e3f2fd);border:2px solid #e0f2e9;border-radius:12px 0 0 12px;color:#2e7d32;font-weight:600;}
+  .slider-wrap{position:relative;}
+  .range-val{display:inline-block;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border-radius:8px;padding:.2rem .7rem;font-size:.85rem;font-weight:700;}
+  .param-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.5rem;}
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="predict-hero text-center mb-0">
+  <div class="container">
+    <h1 class="fw-800"><i class="fas fa-leaf me-3"></i>Crop Prediction</h1>
+    <p class="opacity-75 mb-0">Enter your district and field conditions for AI-powered crop recommendation</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="glass-card p-4 p-md-5 fade-up">
+        <form method="POST" action="/predict" id="predictForm">
+
+          <!-- District -->
+          <div class="mb-4">
+            <label class="form-label"><i class="fas fa-map-marker-alt me-2"></i>Select District</label>
+            <select name="district" class="form-select form-select-lg" required>
+              {% for d in districts %}
+              <option value="{{ d }}">{{ d }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="section-title mb-0"><i class="fas fa-flask me-2"></i>Soil Nutrients (kg/ha)</h6></div>
+
+            {% for name, label, icon, min, max, val, unit in [
+              ('nitrogen','Nitrogen (N)','fa-atom',0,140,50,'kg/ha'),
+              ('phosphorus','Phosphorus (P)','fa-vial',5,145,60,'kg/ha'),
+              ('potassium','Potassium (K)','fa-fire',5,200,40,'kg/ha')
+            ] %}
+            <div class="col-md-4">
+              <label class="form-label"><i class="fas {{ icon }} me-1"></i>{{ label }}</label>
+              <div class="input-group">
+                <span class="input-group-text">{{ unit }}</span>
+                <input type="number" name="{{ name }}" class="form-control" value="{{ val }}" min="{{ min }}" max="{{ max }}" step="1" required/>
+              </div>
+              <input type="range" class="form-range mt-2" min="{{ min }}" max="{{ max }}" value="{{ val }}"
+                oninput="this.previousElementSibling.previousElementSibling.querySelector('input').value=this.value"/>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="section-title mb-0"><i class="fas fa-cloud-sun me-2"></i>Environmental Conditions</h6></div>
+
+            {% for name, label, icon, min, max, val, unit, step in [
+              ('temperature','Temperature','fa-thermometer-half',10,50,25,'°C','0.1'),
+              ('humidity','Humidity','fa-tint',10,100,70,'%','1'),
+              ('ph','Soil pH','fa-balance-scale',3,9,6.5,'pH','0.1'),
+              ('rainfall','Rainfall','fa-cloud-rain',100,1200,800,'mm','1')
+            ] %}
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label"><i class="fas {{ icon }} me-1"></i>{{ label }}</label>
+              <div class="input-group">
+                <span class="input-group-text">{{ unit }}</span>
+                <input type="number" name="{{ name }}" class="form-control" value="{{ val }}" min="{{ min }}" max="{{ max }}" step="{{ step }}" required/>
+              </div>
+              <input type="range" class="form-range mt-2" min="{{ min }}" max="{{ max }}" value="{{ val }}" step="{{ step }}"
+                oninput="this.previousElementSibling.previousElementSibling.querySelector('input').value=this.value"/>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="text-center mt-4">
+            <button type="submit" class="btn btn-green btn-lg px-5" id="submitBtn">
+              <i class="fas fa-magic me-2"></i>Predict Best Crop
+            </button>
+            <button type="reset" class="btn btn-outline-secondary btn-lg px-4 ms-3">
+              <i class="fas fa-redo me-2"></i>Reset
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Quick guide -->
+      <div class="glass-card p-4 mt-4 fade-up fade-up-d2">
+        <h6 class="fw-700 mb-3"><i class="fas fa-lightbulb me-2 text-warning"></i>Input Guide</h6>
+        <div class="row g-2 text-muted small">
+          <div class="col-md-6"><i class="fas fa-check-circle text-success me-2"></i><strong>Nitrogen:</strong> 0–140 kg/ha — affects leaf growth</div>
+          <div class="col-md-6"><i class="fas fa-check-circle text-success me-2"></i><strong>Phosphorus:</strong> 5–145 kg/ha — root and fruit development</div>
+          <div class="col-md-6"><i class="fas fa-check-circle text-success me-2"></i><strong>Potassium:</strong> 5–200 kg/ha — disease resistance</div>
+          <div class="col-md-6"><i class="fas fa-check-circle text-success me-2"></i><strong>pH:</strong> 5.5–7.5 — neutral to slightly acidic ideal</div>
+          <div class="col-md-6"><i class="fas fa-check-circle text-success me-2"></i><strong>Temperature:</strong> Avg annual temp in °C</div>
+          <div class="col-md-6"><i class="fas fa-check-circle text-success me-2"></i><strong>Rainfall:</strong> Annual rainfall in mm</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  document.getElementById('predictForm').addEventListener('submit', function(){
+    const btn = document.getElementById('submitBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+    btn.disabled = true;
+  });
+  // Sync sliders with number inputs
+  document.querySelectorAll('input[type=range]').forEach(slider => {
+    slider.addEventListener('input', function() {
+      const numInput = this.previousElementSibling.previousElementSibling.querySelector('input[type=number]');
+      if (numInput) numInput.value = this.value;
+    });
+  });
+  document.querySelectorAll('input[type=number]').forEach(num => {
+    num.addEventListener('input', function() {
+      const slider = this.closest('.col-md-4, .col-md-6, .col-lg-3')?.querySelector('input[type=range]');
+      if (slider) slider.value = this.value;
+    });
+  });
+</script>
+{% endblock %}

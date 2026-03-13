@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}About & Model Performance — CropAI Maharashtra{% endblock %}
+{% block extra_css %}
+<style>
+  .about-hero{background:linear-gradient(135deg,#1b5e20,#01579b);padding:2.5rem 0;color:#fff;}
+  .model-row{border-radius:12px;padding:.8rem 1.2rem;margin-bottom:.6rem;display:flex;align-items:center;gap:1rem;}
+  .acc-bar{height:10px;border-radius:50px;background:linear-gradient(90deg,#4caf50,#81c784);}
+  .team-card{border-radius:20px;padding:2rem;text-align:center;}
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="about-hero text-center mb-0">
+  <div class="container">
+    <h1 class="fw-800"><i class="fas fa-info-circle me-3"></i>About & Model Performance</h1>
+    <p class="opacity-75 mb-0">ML model evaluation, feature analysis, and system details</p>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- Best Model Highlight -->
+  <div class="glass-card p-4 mb-5 text-center fade-up">
+    <div style="font-size:3rem">🏆</div>
+    <h3 class="section-title mt-2">Best Model: {{ best_model_name }}</h3>
+    <p class="text-muted">Selected via accuracy comparison and 5-fold cross-validation across all models.</p>
+    <span class="badge bg-success fs-6 px-4 py-2 rounded-pill">
+      {{ model_results[best_model_name]['accuracy'] }}% Accuracy on Test Set
+    </span>
+  </div>
+
+  <!-- Model Comparison -->
+  <div class="glass-card p-4 mb-5 fade-up">
+    <h4 class="section-title"><i class="fas fa-robot me-2"></i>Model Performance Comparison</h4>
+    <canvas id="modelCompChart" height="180" class="mb-4"></canvas>
+
+    {% for name, res in model_results.items() %}
+    <div class="model-row {% if name == best_model_name %}border border-success border-2{% endif %}" style="background:rgba(255,255,255,.5)">
+      <div class="flex-grow-1">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="fw-700">
+            {% if name == best_model_name %}<i class="fas fa-trophy text-warning me-2"></i>{% endif %}
+            {{ name }}
+          </span>
+          <span class="fw-700 text-success">{{ res['accuracy'] }}%</span>
+        </div>
+        <div class="bg-light rounded-pill" style="height:10px">
+          <div class="acc-bar" style="width:{{ res['accuracy'] }}%;"></div>
+        </div>
+        <div class="small text-muted mt-1">CV Mean: {{ res['cv_mean'] }}% ± {{ res['cv_std'] }}%</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Feature Importance -->
+  <div class="glass-card p-4 mb-5 fade-up">
+    <h4 class="section-title"><i class="fas fa-star me-2"></i>Feature Importance</h4>
+    <p class="text-muted small">Top features driving crop prediction in the best model:</p>
+    {% for feat, imp in feat_importance.items()|sort(attribute='1', reverse=True) %}
+    <div class="mb-2">
+      <div class="d-flex justify-content-between mb-1">
+        <span class="fw-600"><i class="fas fa-angle-right me-2 text-success"></i>{{ feat }}</span>
+        <span class="fw-700 text-success">{{ (imp * 100)|round(1) }}%</span>
+      </div>
+      <div class="bg-light rounded-pill" style="height:8px">
+        <div style="width:{{ (imp*100)|round(1) }}%;height:8px;border-radius:50px;background:linear-gradient(90deg,#2e7d32,#66bb6a)"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- System Info -->
+  <div class="row g-4 fade-up">
+    <div class="col-md-6">
+      <div class="glass-card p-4">
+        <h5 class="fw-700"><i class="fas fa-cogs me-2 text-success"></i>System Architecture</h5>
+        <ul class="list-unstyled mt-3">
+          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Python 3 · Flask Web Framework</li>
+          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Scikit-learn ML Pipeline</li>
+          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>LabelEncoder + StandardScaler</li>
+          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>5 ML Algorithms compared</li>
+          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>5-Fold Stratified Cross-Validation</li>
+          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Hybrid ML + Agronomy Rule Engine</li>
+          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>REST API endpoint (/api/predict)</li>
+          <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Bootstrap 5 · Chart.js UI</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="glass-card p-4">
+        <h5 class="fw-700"><i class="fas fa-database me-2 text-primary"></i>Dataset Details</h5>
+        <table class="table table-sm table-borderless mt-3">
+          <tr><td class="text-muted">Source</td><td class="fw-600">Maharashtra Crop Dataset</td></tr>
+          <tr><td class="text-muted">Total Records</td><td class="fw-600">2,200</td></tr>
+          <tr><td class="text-muted">Districts</td><td class="fw-600">20 Maharashtra Districts</td></tr>
+          <tr><td class="text-muted">Crop Types</td><td class="fw-600">22 Crop Classes</td></tr>
+          <tr><td class="text-muted">Input Features</td><td class="fw-600">8 (District + Soil + Climate)</td></tr>
+          <tr><td class="text-muted">Train/Test Split</td><td class="fw-600">80% / 20%</td></tr>
+          <tr><td class="text-muted">Preprocessing</td><td class="fw-600">Label Encoding + Standard Scaling</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Docs -->
+  <div class="glass-card p-4 mt-5 fade-up">
+    <h4 class="section-title"><i class="fas fa-code me-2"></i>REST API Endpoint</h4>
+    <p class="text-muted">Use the prediction API in your own applications:</p>
+    <div class="rounded-3 p-3 mb-3" style="background:#1e2d3d;color:#a5d6a7;font-family:monospace;font-size:.88rem;overflow-x:auto">
+      <div class="text-warning mb-1">POST /api/predict</div>
+      <div class="text-white mb-2">Content-Type: application/json</div>
+      <pre class="text-light mb-0">{
+  "district": "Nashik",
+  "nitrogen": 50,
+  "phosphorus": 60,
+  "potassium": 40,
+  "temperature": 25,
+  "humidity": 70,
+  "ph": 6.5,
+  "rainfall": 800
+}</pre>
+    </div>
+    <div class="rounded-3 p-3" style="background:#1e2d3d;color:#a5d6a7;font-family:monospace;font-size:.88rem;overflow-x:auto">
+      <div class="text-warning mb-1">Response:</div>
+      <pre class="text-light mb-0">{
+  "recommended_crop": "grapes",
+  "confidence": 18.4,
+  "top5": [
+    {"crop": "grapes", "confidence": 18.4},
+    {"crop": "pomegranate", "confidence": 14.2},
+    ...
+  ]
+}</pre>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+var modelNames = JSON.parse('{{ model_results.keys()|list|tojson|safe }}');
+var modelAccs  = JSON.parse('{{ model_results.values()|map(attribute="accuracy")|list|tojson|safe }}');
+var modelCVs   = JSON.parse('{{ model_results.values()|map(attribute="cv_mean")|list|tojson|safe }}');
+
+new Chart(document.getElementById('modelCompChart'), {
+  type: 'bar',
+  data: {
+    labels: modelNames,
+    datasets: [
+      { label: 'Test Accuracy (%)', data: modelAccs, backgroundColor: 'rgba(46,125,50,.75)', borderRadius: 8 },
+      { label: 'CV Mean (%)',       data: modelCVs,  backgroundColor: 'rgba(2,136,209,.75)',  borderRadius: 8 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { beginAtZero: true, max: 15, title: { display: true, text: 'Accuracy (%)' } } }
+  }
+});
+</script>
+{% endblock %}

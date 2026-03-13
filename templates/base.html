@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Crops Recommendation System{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    :root{
+      --green:#2e7d32;--light-green:#4caf50;--blue:#0288d1;
+      --earth:#6d4c41;--glass:rgba(255,255,255,0.2);
+      --shadow:0 8px 32px rgba(31,38,135,.15);
+    }
+    body{background:linear-gradient(135deg,#e8f5e9 0%,#e3f2fd 55%,#fbe9e7 100%);min-height:100vh;font-family:'Segoe UI',sans-serif;}
+    .navbar{background:linear-gradient(90deg,#1b5e20,#01579b)!important;box-shadow:0 4px 24px rgba(0,0,0,.25);}
+    .navbar-brand{font-weight:800;font-size:1.4rem;letter-spacing:.5px;}
+    .nav-link{font-weight:500;transition:.25s;}
+    .nav-link:hover,.nav-link.active{color:#a5d6a7!important;transform:translateY(-2px);}
+    .glass-card{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.4);border-radius:22px;box-shadow:var(--shadow);}
+    .btn-green{background:linear-gradient(135deg,var(--green),var(--light-green));border:none;border-radius:50px;padding:.7rem 2.2rem;font-weight:600;color:#fff;transition:.3s;}
+    .btn-green:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(46,125,50,.4);color:#fff;}
+    .section-title{font-weight:800;background:linear-gradient(135deg,#2e7d32,#0288d1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    footer{background:linear-gradient(90deg,#1b5e20,#01579b);color:#fff;padding:2.5rem 0;margin-top:5rem;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp .65s ease both;}
+    .fade-up-d1{animation-delay:.1s}.fade-up-d2{animation-delay:.2s}.fade-up-d3{animation-delay:.3s}
+    .crop-emoji{font-size:2.5rem;}
+    .stat-badge{display:inline-block;background:linear-gradient(135deg,#e8f5e9,#e3f2fd);border-radius:12px;padding:.5rem 1.2rem;font-weight:600;color:#2e7d32;border:1px solid rgba(46,125,50,.2);}
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/"><i class="fas fa-seedling me-2"></i>Crops Recommendation System</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/predict"><i class="fas fa-leaf me-1"></i>Crop Prediction</a></li>
+        <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-bar me-1"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="/insights"><i class="fas fa-database me-1"></i>Dataset Insights</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about"><i class="fas fa-info-circle me-1"></i>About</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer class="text-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 mb-3 mb-md-0">
+        <h6><i class="fas fa-seedling me-2"></i>Crops Recommendation System</h6>
+        <small class="opacity-75">AI-Powered Agricultural Intelligence for Maharashtra Farmers</small>
+      </div>
+      <div class="col-md-4 mb-3 mb-md-0">
+        <h6><i class="fas fa-cogs me-2"></i>Technology Stack</h6>
+        <small class="opacity-75">Python · Flask · Scikit-learn · Bootstrap 5</small>
+      </div>
+      <div class="col-md-4">
+        <h6><i class="fas fa-map-marker-alt me-2"></i>Coverage</h6>
+        <small class="opacity-75">20 Districts · 22 Crops · 2200+ Records</small>
+      </div>
+    </div>
+    <hr class="my-3 border-light opacity-25"/>
+    <small class="opacity-75">© 2026 Crops Recommendation System — Built for Farmers of Maharashtra</small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

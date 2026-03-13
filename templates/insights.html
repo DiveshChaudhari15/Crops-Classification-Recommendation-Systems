@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Dataset Insights — Crops Recommendation System{% endblock %}
+{% block extra_css %}
+<style>
+  .insights-hero{background:linear-gradient(135deg,#1b5e20,#01579b);padding:2.5rem 0;color:#fff;}
+  .table-scroll{overflow-x:auto;border-radius:16px;}
+  table{font-size:.85rem;}
+  th{background:linear-gradient(135deg,#2e7d32,#1565c0)!important;color:#fff!important;font-weight:600;}
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="insights-hero text-center mb-0">
+  <div class="container">
+    <h1 class="fw-800"><i class="fas fa-database me-3"></i>Dataset Insights</h1>
+    <p class="opacity-75 mb-0">Explore the Maharashtra Crop Recommendation Dataset</p>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- Stats Overview -->
+  <div class="row g-3 mb-5 fade-up">
+    {% for icon, val, label, color in [
+      ('fa-table', total_rows, 'Total Records', '#2e7d32'),
+      ('fa-columns', total_features, 'Features', '#0288d1'),
+      ('fa-seedling', '22', 'Crop Labels', '#6d4c41'),
+      ('fa-map-marker-alt', '20', 'Districts', '#ad1457')
+    ] %}
+    <div class="col-6 col-md-3">
+      <div class="glass-card p-3 text-center">
+        <i class="fas {{ icon }} fa-2x mb-2" style="color:{{ color }}"></i>
+        <div class="fw-800 fs-3" style="color:{{ color }}">{{ val }}</div>
+        <div class="text-muted small">{{ label }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Correlation Heatmap -->
+  <div class="glass-card p-4 mb-5 fade-up">
+    <h4 class="section-title"><i class="fas fa-th me-2"></i>Feature Correlation Heatmap</h4>
+    <canvas id="heatmap" height="250"></canvas>
+  </div>
+
+  <!-- Statistical Summary -->
+  <div class="glass-card p-4 mb-5 fade-up">
+    <h4 class="section-title"><i class="fas fa-calculator me-2"></i>Statistical Summary</h4>
+    <div class="table-scroll">{{ stats_html|safe }}</div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="glass-card p-4 fade-up">
+    <h4 class="section-title"><i class="fas fa-table me-2"></i>Dataset Sample (First 50 Rows)</h4>
+    <div class="table-scroll">{{ table_html|safe }}</div>
+  </div>
+
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const corrData = {{ corr_json|safe }};
+const corrCols = {{ corr_cols|safe }};
+
+// Draw heatmap using Chart.js
+const heatCtx = document.getElementById('heatmap').getContext('2d');
+const n = corrCols.length;
+const flatLabels = [];
+const flatData = [];
+
+// Convert to scatter for pseudo-heatmap
+const datasets = corrData.map((row, ri) => ({
+  label: corrCols[ri],
+  data: row.map((val, ci) => ({ x: ci, y: ri, v: val })),
+  backgroundColor: row.map(val => {
+    const r = val >= 0 ? 46 : 198;
+    const g = val >= 0 ? 125 : 40;
+    const b = val >= 0 ? 50 : 40;
+    const a = Math.abs(val) * 0.9 + 0.1;
+    return `rgba(${r},${g},${b},${a})`;
+  }),
+  pointRadius: 28,
+  pointStyle: 'rect',
+}));
+
+new Chart(heatCtx, {
+  type: 'scatter',
+  data: { datasets },
+  options: {
+    scales: {
+      x: { type: 'linear', min: -0.5, max: n - 0.5, ticks: { callback: v => corrCols[Math.round(v)] || '', stepSize: 1 }, grid: { display: false } },
+      y: { type: 'linear', min: -0.5, max: n - 0.5, reverse: true, ticks: { callback: v => corrCols[Math.round(v)] || '', stepSize: 1 }, grid: { display: false } }
+    },
+    plugins: { legend: { display: false }, tooltip: {
+      callbacks: { label: ctx => `${corrCols[ctx.raw.y]} ↔ ${corrCols[ctx.raw.x]}: ${ctx.raw.v.toFixed(3)}` }
+    }}
+  }
+});
+</script>
+{% endblock %}
